@@ -13,6 +13,10 @@ export const recipeApi = createApi({
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const { useGetRecipesQuery } = recipeApi;
+
+// getAllRecipeForUser: builder.query({
+//     query: () => `api/recipes/myrecipes`,
+//   }),
+
+//  useGetAllRecipeForUserQuery;

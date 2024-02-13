@@ -1,17 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getMyRecipes } from "./user/userOperations";
 
 const initialState = {
   recipes: [],
   error: null,
-  loader: null,
+  isLoading: false,
 };
 
 export const recipesSlice = createSlice({
-  name: "recipes",
+  name: "recipe",
   initialState,
-  reducers: {},
+  extraReducers: (builder) =>
+    builder
+      .addCase(getMyRecipes.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getMyRecipes.fulfilled, (state, { payload }) => {
+        console.log(payload);
+        state.isLoading = false;
+        state.recipes = payload;
+      }),
 });
 
-// export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-
-export default recipesSlice.reducer;
+export const recipeReducer = recipesSlice.reducer;

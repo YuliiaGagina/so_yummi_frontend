@@ -1,11 +1,11 @@
 import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import { useGetRecipesQuery } from "../redux/recipeApi";
-import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Loader from "./Loader";
 
-const Beef = () => {
-  const [beef, setBeef] = useState([]);
+const CategoryItem = ({ item }) => {
+  const [recipesForEachCategory, setRecipesForEachCategory] = useState([]);
   const { data = [], error, isLoading } = useGetRecipesQuery();
 
   const style = {
@@ -13,30 +13,30 @@ const Beef = () => {
   };
   useEffect(() => {
     if (data.length > 0) {
-      const beef = data.filter((el) => el.category === "Говядина");
-      setBeef(beef);
+      const recipesForEachCategory = data.filter((el) => el.category === item);
+      setRecipesForEachCategory(recipesForEachCategory);
     }
-  }, [data]);
-
+  }, [data, item]);
   return (
-    <section className="container mx-auto">
+    <div className="">
+      {isLoading && <Loader />}
       <h2 className="text-4xl text-gray-100 font-semibold mb-8 rounded-md">
         {" "}
-        Говядина
+        {item}
       </h2>
       <ul className="mb-8">
         {" "}
-        {beef.map((recipe) => (
-          <li key={recipe.id}>
+        {recipesForEachCategory.map((recipe) => (
+          <li className="" key={recipe.title}>
             {" "}
             <NavLink
               className="relative  ease-in-out duration-500"
               to={`${recipe.id}`}
             >
-              <div className="w-72 h-52 overflow-hidden flex-column flex-wrap justify-center overflow-hidden rounded-md  relative">
+              <div className="shadow-lg w-72 h-52 overflow-hidden rounded-md flex-column flex-wrap justify-center overflow-hidden   relative">
                 <img
                   src={recipe.photo}
-                  className="w-full h-full  hover:scale-125 ease-in-out duration-500  overflow-hidden rounded-md shadow-xl shadow-cyan-500/50 block"
+                  className="w-full h-full hover:scale-125 ease-in-out duration-500  overflow-hidden rounded-md shadow-xl shadow-cyan-500/50 block"
                   // width="300"
                   // height="323"
                   alt="1"
@@ -54,11 +54,11 @@ const Beef = () => {
       </ul>
 
       <Outlet />
-      <NavLink className="border-2 border-green-20 py-2 px-1 text-center rounded-xl w-14 bg-green-20 block ml-auto hover:border-black ">
+      <NavLink className="border-2 block border-green-20 py-1 px-1 text-center rounded-xl w-24 shadow-lg   ml-auto hover:bg-green-20 ">
         Se all
       </NavLink>
-    </section>
+    </div>
   );
 };
 
-export default Beef;
+export default CategoryItem;
