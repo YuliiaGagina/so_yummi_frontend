@@ -4,6 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 axios.defaults.baseURL = "http://localhost:3001/";
 // /api/auth/register
 // process.env.REACT_APP_LOGIN;
+
 const token = {
   set(token) {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -15,25 +16,66 @@ const token = {
 
 export const register = createAsyncThunk(
   "user/register",
-  async (credentials, thunkAPI) => {
+  async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await axios.post("/api/auth/register", credentials);
 
       console.log(data);
       return data;
-    } catch (err) {}
+    } catch (error) {
+      if (!error.response) {
+        // Якщо виникає помилка під час виконання запиту (наприклад, мережева помилка)
+        return rejectWithValue(
+          "Помилка мережі. Будь ласка, спробуйте через 1 хвилину."
+        );
+      } else if (
+        error.response.status === 400 ||
+        error.response.status === 500
+      ) {
+        // Якщо сервер повертає статус 400 або 500 (наприклад, невірні дані)
+        return rejectWithValue(
+          "Пароль має бути більше 6 символів і пошта в правильному форматі"
+        );
+      } else {
+        // Якщо інші типи помилок
+        return rejectWithValue(
+          "Виникла невідома помилка. Будь ласка, спробуйте пізніше."
+        );
+      }
+    }
   }
 );
 
 export const login = createAsyncThunk(
   "user/login",
-  async (credentials, thunkAPI) => {
+  async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await axios.post("/api/auth/login", credentials);
-      token.set(data.data.token);
+      console.log(data);
+      await token.set(data.accessToken);
 
       return data;
-    } catch (err) {}
+    } catch (error) {
+      if (!error.response) {
+        // Якщо виникає помилка під час виконання запиту (наприклад, мережева помилка)
+        return rejectWithValue(
+          "Помилка мережі. Будь ласка, спробуйте пізніше."
+        );
+      } else if (
+        error.response.status === 400 ||
+        error.response.status === 500
+      ) {
+        // Якщо сервер повертає статус 400 або 500 (наприклад, невірні дані)
+        return rejectWithValue(
+          "Неправильний логін або пароль. Будь ласка, спробуйте ще раз."
+        );
+      } else {
+        // Якщо інші типи помилок
+        return rejectWithValue(
+          "Виникла невідома помилка. Будь ласка, спробуйте пізніше."
+        );
+      }
+    }
   }
 );
 
@@ -46,23 +88,20 @@ export const logout = createAsyncThunk("user/logout", async (_, thunkApi) => {
 
 // Authorization: "Bearer ";
 
-export const getCurrentUser = createAsyncThunk(
-  "current/get",
-  async (_, thunkApi) => {
-    const state = thunkApi.getState();
-    const persistedToken = state.user.token;
-    if (token === null) {
-      return;
-    }
-    token.set(persistedToken);
-    try {
-      const { data } = await axios.get("/api/users/current");
-      //   if (!data) return;
-      //   console.log(data.data.user);
-      return data;
-    } catch (err) {}
+export const refreshUser = createAsyncThunk("current/get", async (_, thunkApi) => {
+  const state = thunkApi.getState();
+  const persistedToken = state.user.token;
+  if (token === null) {
+    return;
   }
-);
+  token.set(persistedToken);
+  try {
+    const { data } = await axios.get("/api/users/current");
+    //   if (!data) return;
+    //   console.log(data.data.user);
+    return data;
+  } catch (err) {}
+});
 
 export const getMyRecipes = createAsyncThunk("recipes/gatAll", async () => {
   try {
@@ -80,6 +119,21 @@ export const addRecipe = createAsyncThunk(
     try {
       const { data } = await axios.post("/api/recipes", credentials);
 
+      console.log(data);
+      return data;
+    } catch (err) {
+      console.error("An error occurred while adding a recipe:", err);
+    }
+  }
+);
+
+export const addToFavorite = createAsyncThunk(
+  "favorite/add",
+  async ({ id, favorite }) => {
+    try {
+      const data = await axios.patch(`/api/recipes/${id}/favorite`, {
+        favorite,
+      });
       console.log(data);
       return data;
     } catch (err) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import { useState } from "react";
 import { useGetRecipesQuery } from "../redux/recipeApi";
 import bg from "../assets/bg2.png";
@@ -7,10 +7,29 @@ import leaves from "../assets/leaves.png";
 import leftLeaves from "../assets/left_leaves.png";
 import Loader from "../components/Loader";
 import CategoryItem from "./../components/CategoryItem";
+import Button from "./../components/Button";
+import { useSelector } from "react-redux";
+import { getMyRecipes } from "./../redux/user/userOperations";
+import { useDispatch } from "react-redux";
+import { setAllRecipes } from "../redux/recipeSlice";
+import { ThemeContext } from "./../components/ThemeProvider";
 
 export default function HomePage() {
   const { data = [], error, isLoading } = useGetRecipesQuery();
   console.log(data);
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const name = useSelector((state) => state?.user?.user?.name);
+
+  const { theme } = useContext(ThemeContext);
+  useEffect(() => {
+    if (isLoggedIn) dispatch(getMyRecipes());
+  }, [dispatch, isLoggedIn]);
+
+  // useState(() => {
+  //   dispatch(getMyRecipes());
+  // }, [dispatch]);
+
   const [navbarOpen, setNavbarOpen] = useState(false);
   const allCategories = [
     "Завтрак",
@@ -33,8 +52,12 @@ export default function HomePage() {
     <p>Oh no, there was an error</p>
   ) : data ? (
     <main className="overflow-x-hidden">
-      <div className="bg-green  absolute transform skew-x-20 origin-left-bottom  z-[-5] top-0 right-0 x--1 rounded-bl-lg xs:w-64 xs:right-0 xs:h-96 md:w-3/6 md:h-3/5"></div>
-      <div className="mb-16">
+      <div
+        className={`transform skew-x-12 absolute origin-left-bottom z-[-5] top-0 right-0 x--1 rounded-bl-lg xs:w-64 xs:right-0 xs:h-96 md:w-3/6 md:h-3/5 ${
+          theme === "light" ? "bg-green" : "bg-green-90"
+        }`}
+      ></div>
+      <div className="mb-16 ">
         <img
           className="absolute  xs:right-[-400px] xs:w-0 sm:w-96  xs:top-52 sm:top-52 sm:right-0 md:w-2/4 md:top-0"
           src={leaves}
@@ -51,11 +74,16 @@ export default function HomePage() {
             <h1 className="text-5xl px-16 mb-4">
               <span className="text-green-20 xs:text-center ">So</span> Yummi
             </h1>
-            <p className="px-16 xs:w-64 text-lg xs:w-96 md:w-full ">
+            <p className="px-16 xs:w-64 text-lg xs:w-96 md:w-full mb-8">
               "What to cook?" is not only a recipe app, it is, in fact, your
               cookbook. You can add your own recipes to save them for the
               future.
             </p>
+            {name && (
+              <p className="px-16 xs:w-64 text-lg xs:w-96 md:w-full text-green-20">
+                Hello dear {name || ""}! Now you can collect your own recipes!
+              </p>
+            )}
           </div>
           <div className="relative right-8   z-1 ">
             <img
@@ -67,17 +95,19 @@ export default function HomePage() {
         </div>
       </div>
 
-      <section className="container px-4 mb-9  xs:mx-auto">
+      <section className="container:lg mx-auto flex-wrap md:px-28 xs:px-4 sm:px-8  mb-9  xs:mx-auto">
         {allCategories.slice(0, visibleItems).map((item) => (
-          <CategoryItem key={item} item={item} />
+          <CategoryItem key={item._id} item={item} />
         ))}
         {visibleItems < allCategories.length && (
-          <button
-            className="shadow-lg  mx-auto block mb-12  px-4 py-2 border-2 text-center border-green-20 rounded-tr-full rounded-bl-full ml-auto hover:bg-green-20 hover:text-red"
+          <Button
+            borderColor="green-20 "
+            hoverBg="green-20"
+            text="center"
             onClick={handleLoadMore}
           >
             Other Categories
-          </button>
+          </Button>
         )}
       </section>
     </main>

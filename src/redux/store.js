@@ -14,12 +14,13 @@ import storage from "redux-persist/lib/storage";
 import { userReducer } from "./user/userSlice";
 import { recipeReducer } from "./recipeSlice";
 import { recipeApi } from "./recipeApi";
+import { filterReducer } from "./filterSlice";
 
 const persistConfig = {
   key: "user",
   version: 1,
   storage,
-  whitelist: ["token"],
+  whitelist: ["token", "engredients"],
 };
 const persistedReducer = persistReducer(persistConfig, userReducer);
 
@@ -28,6 +29,7 @@ export const store = configureStore({
     user: persistedReducer,
     [recipeApi.reducerPath]: recipeApi.reducer,
     recipe: recipeReducer,
+    filter: filterReducer,
   },
 
   middleware: (getDefaultMiddleware) =>

@@ -2,15 +2,26 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        my: "url('/src/assets/my.png')",
+        bg3: "url('/src/assets/bg3.png')",
+        loginbg: "url('/src/assets/loginbg.png')",
+      },
+    },
     colors: {
       "green-20": "#8baa36",
       "gray-100": "#22252A",
+      "gray-10": "#868c97",
+      "gray-20": "#3E4462",
       "gray-90": "#3E4462",
       "gray-99": "#22252a",
+      "slate-100": "#e5e5e5",
       green: "#ebf3d4",
       "green-90": "#3a4a0b",
+      "green-100": "#0e3600",
       white: "#ffffff",
+      "red-100": "#970101",
     },
     skew: {
       20: "-20deg",

@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const recipeApi = createApi({
   reducerPath: "resipeApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://odd-rose-fossa-fez.cyclic.app/",
+    baseUrl: "http://localhost:3001/",
   }),
   endpoints: (builder) => ({
     getRecipes: builder.query({
@@ -20,3 +20,14 @@ export const { useGetRecipesQuery } = recipeApi;
 //   }),
 
 //  useGetAllRecipeForUserQuery;
+// export const recipeApi = createApi({
+//   reducerPath: "resipeApi",
+//   baseQuery: fetchBaseQuery({
+//     baseUrl: "http://localhost:3001/",
+//   }),
+//   endpoints: (builder) => ({
+//     getRecipes: builder.query({
+//       query: () => `api/recipes`,
+//     }),
+//   }),
+// });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import authSelectors from "../redux/user/user-selectors";
 import { useSelector } from "react-redux";
@@ -10,9 +10,16 @@ import MobileMenu from "./MobileMenu";
 import { FaSearch } from "react-icons/fa";
 import AuthNav from "./AuthNav";
 import Usermenu from "./Usermenu";
+import { useAuth } from "./hooks/useAuth";
 
 const Layout = () => {
-  const isLogedin = useSelector((state) => state.user.isLoggedIn);
+  const { isLoggedIn } = useAuth();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  console.log(isUserLoggedIn);
+
+  useEffect(() => {
+    setIsUserLoggedIn(isLoggedIn);
+  }, [isLoggedIn]);
 
   return (
     <div className="">
@@ -23,36 +30,36 @@ const Layout = () => {
         <div className="md:flex gap-2 items-center xs:hidden sm:hidden md:block">
           {" "}
           <Link
-            className="w-32 hover:text-green-90 hover:font-semibold"
+            className="w-32 hover:text-green-100 hover:font-semibold"
             to="/categories"
           >
             Categories
           </Link>
           <Link
-            className="w-32 hover:text-green-90 hover:font-semibold"
+            className="w-32 hover:text-green-100 hover:font-semibold"
             to="/addrecipes"
           >
             Add Recipes
           </Link>
           <Link
-            className="w-32 hover:text-green-90 hover:font-semibold"
+            className="w-32 hover:text-green-100 hover:font-semibold"
             to="/myrecipes"
           >
             My Recipes
           </Link>
           <Link
-            className="w-32 hover:text-green-90 hover:font-semibold"
+            className="w-32 hover:text-green-100 hover:font-semibold"
             to="/favorites"
           >
             Favorites
           </Link>
           <Link
-            className="w-32 hover:text-green-90 hover:font-semibold"
+            className="w-32 hover:text-green-100 hover:font-semibold"
             to="/shopinglist"
           >
             Shoping List
           </Link>
-          <Link to="/search" className=" hover:text-green-90 ">
+          <Link to="/search" className=" hover:text-green-100 ">
             {" "}
             {/* <img className="w-6 h-6" src={search} alt="" /> */}
             <FaSearch />
@@ -60,7 +67,7 @@ const Layout = () => {
         </div>
 
         <MobileMenu />
-        {isLogedin ? <Usermenu /> : <AuthNav />}
+        {isUserLoggedIn ? <Usermenu /> : <AuthNav />}
       </nav>
 
       <Outlet />
